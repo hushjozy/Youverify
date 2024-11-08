@@ -1,0 +1,88 @@
+version: "3.8"
+
+services:
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    networks:
+      - elastic
+    environment:
+      - MONGO_URI=mongodb://root:passVerify@mongo:27017/youVerify?authSource=admin
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    depends_on:
+      - rabbitmq
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - elastic
+    environment:
+      - MONGO_URI=mongodb://root:passVerify@mongo:27017/youVerify?authSource=admin
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=elasticpassword
+    networks:
+      - elastic
+    ports:
+      - "9200:9200"
+    restart: always
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=elasticpassword
+    networks:
+      - elastic
+    ports:
+      - "5601:5601"
+    restart: always
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    networks:
+      - elastic
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: passVerify
+      MONGO_INITDB_DATABASE: youVerify
+    ports:
+      - "27017:27017"
+    restart: always
+
+networks:
+  elastic:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+  es-data:
+    driver: local

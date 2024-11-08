@@ -1,13 +1,10 @@
-import { Order } from "../models/order.model";
+import { startCheckOrder } from "../events/listener.event.js";
+import { Order } from "../models/orderModel.js";
 
 export const createOrder = async (req, res) => {
   try {
     const { itemId, quantity } = req.body;
-
-    // Check stock, create order, etc.
-    const order = new Order({ itemId, quantity });
-    await order.save();
-    res.status(201).json(order);
+    await startCheckOrder(itemId, quantity, res);
   } catch (error) {
     console.log(error);
   }

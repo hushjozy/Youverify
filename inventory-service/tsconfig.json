@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true
+    "moduleResolution": "node", // Ensure Node.js-style module resolution
+    "module": "ESNext", // Use ES module syntax
+    "target": "ES6", // Ensure modern JavaScript
+    "esModuleInterop": true, // Allow compatibility with CommonJS-style modules
+    "noImplicitAny": false, // Allow 'any' type (optional based on your preference)
+    "skipLibCheck": true, // Skip checking of declaration files
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest"],
+    "resolveJsonModule": true,
+    "outDir": "./dist", // Output compiled JS to 'dist' folder
+    "rootDir": "./src", // Root source directory for TypeScript files
+    "strict": true // Enable all strict type-checking options
   },
-  "include": ["src/**/*", "src/routes"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"], // Include all files in 'src' folder
+  "exclude": ["node_modules"] // Exclude 'node_modules'
 }
