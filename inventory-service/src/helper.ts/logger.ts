@@ -3,7 +3,7 @@ import { ElasticsearchTransport } from "winston-elasticsearch";
 
 const esTransportOpts = {
   level: "info",
-  clientOpts: { node: "http://localhost:9200" },
+  clientOpts: { node: "http://elasticsearch:9200" },
   indexPrefix: "inventory-logs",
 };
 

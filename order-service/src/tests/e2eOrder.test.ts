@@ -7,7 +7,7 @@ describe("E2E Test: Order and Inventory Services", () => {
   let channel;
 
   beforeAll(async () => {
-    const connection = await amqp.connect("amqp://localhost:5672");
+    const connection = await amqp.connect("amqp://guest:guest@localhost:5672");
     channel = await connection.createChannel();
   });
 

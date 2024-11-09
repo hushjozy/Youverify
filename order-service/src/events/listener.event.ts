@@ -4,16 +4,35 @@ import { v4 as uuidv4 } from "uuid";
 
 let channel: amqp.Channel;
 
-export async function connectRabbitMQ() {
-  try {
-    const connection = await amqp.connect(process.env.RABBITMQ_URI || "");
-    channel = await connection.createChannel();
-    console.log("RabbitMQ connection established successfully.");
-  } catch (error) {
-    console.log(process.env.RABBITMQ_URI, error);
+const MAX_RETRIES = 10;
+const INITIAL_DELAY = 2000; // Initial delay of 2 seconds
 
-    // console.error("Failed to connect to RabbitMQ:", error);
+export async function connectRabbitMQ() {
+  const rabbitMQUri = process.env.RABBITMQ_URI || "";
+  let attempts = 0;
+
+  while (attempts < MAX_RETRIES) {
+    try {
+      console.log(
+        `Connecting to RabbitMQ (Attempt ${attempts + 1}/${MAX_RETRIES})...`
+      );
+      const connection = await amqp.connect(rabbitMQUri);
+      channel = await connection.createChannel();
+      console.log("RabbitMQ connection established successfully.");
+      return channel;
+    } catch (error: any) {
+      attempts += 1;
+      const delay = INITIAL_DELAY * Math.pow(2, attempts); // Exponential backoff
+
+      console.error(`Failed to connect to RabbitMQ: ${error.message}`);
+      console.log(`Retrying in ${delay / 1000} seconds...`);
+
+      // Wait for the delay before retrying
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
   }
+
+  throw new Error("Failed to connect to RabbitMQ after multiple attempts.");
 }
 
 const INVENTORY_QUEUE = "inventory_queue";

@@ -1,103 +1,65 @@
-Inventory Order Microservice
+## Inventory Order Microservice
+
 This is an Inventory Order Microservice built with Node.js and TypeScript that uses MongoDB for data storage, RabbitMQ for messaging, Elasticsearch for logging, and Winston for structured logging integrated with Kibana. The service manages order creation and inventory checks.
 
-Features
+## Features/Technologies
+
 MongoDB: For storing order and inventory data.
 RabbitMQ: For communication between the Inventory and Order microservices.
 Elasticsearch: For centralized logging and monitoring with Kibana.
 Winston: For structured logging and logging to Elasticsearch.
 Unit Tests: To ensure the business logic functions correctly.
 E2E Tests: To simulate end-to-end workflows.
-Prerequisites
+
+## Prerequisites
+
 Before running the service, make sure you have the following installed:
 
 Docker (for local development and running services like MongoDB, RabbitMQ, Elasticsearch, and Kibana)
 Node.js (v14 or higher)
 Yarn or npm (for managing dependencies)
 TypeScript (for compiling the code)
-Installation
+
+## Installation
+
 Clone the repository and install dependencies:
 
 bash
 
-git clone https://github.com/your-repo/inventory-order-microservice.git
+git clone the repo
 cd inventory-order-microservice
-yarn install # or npm install
-Docker Compose Setup
-Ensure you have the necessary Docker services running for MongoDB, RabbitMQ, Elasticsearch, and Kibana. You can use the following docker-compose.yml to set up these services locally.
+run npm install
 
-yaml
+## Docker Compose Setup
 
-version: "3.8"
-services:
-mongodb:
-image: mongo:latest
-container_name: mongodb
-environment:
-MONGO_INITDB_ROOT_USERNAME: root
-MONGO_INITDB_ROOT_PASSWORD: rootpassword
-MONGO_INITDB_DATABASE: yourdatabase
-ports: - "27017:27017"
-networks: - elastic
-restart: always
+Ensure you have the necessary Docker services running for MongoDB, RabbitMQ, Elasticsearch, and Kibana. You can use the following docker-compose.yml to set up these services locally . credentials are changable depending on environments.
 
-rabbitmq:
-image: rabbitmq:management
-container_name: rabbitmq
-ports: - "5672:5672" - "15672:15672" # RabbitMQ management UI
-networks: - elastic
-restart: always
+## Configuration
 
-elasticsearch:
-image: docker.elastic.co/elasticsearch/elasticsearch:8.9.3
-container_name: elasticsearch
-environment: - discovery.type=single-node
-ports: - "9200:9200"
-networks: - elastic
-restart: always
-
-kibana:
-image: docker.elastic.co/kibana/kibana:8.9.3
-container_name: kibana
-ports: - "5601:5601"
-networks: - elastic
-restart: always
-
-networks:
-elastic:
-driver: bridge
-Start the services with Docker Compose:
-
-bash
-
-docker-compose up -d
-This will bring up MongoDB, RabbitMQ, Elasticsearch, and Kibana.
-
-Configuration
 Create a .env file in the root of the project to define environment variables:
 
 env
 
-MONGO_URI=mongodb://root:rootpassword@mongodb:27017/yourdatabase
-RABBITMQ_URI=amqp://rabbitmq:5672
+MONGO_URI=mongodb://root:passVerify@mongodb:27017/youVerify
+RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
 ELASTICSEARCH_URI=http://elasticsearch:9200
-LOGGING_LEVEL=info
+and PORT=3000 for inventory and PORT=4000 for order
 
-Running the Microservice
+## Start All the services with Docker Compose:
 
-Start the service using:
-docker-compose up --build
+`docker-compose up --build`
 
-This will start the Inventory and Order service, which will listen for incoming HTTP requests and RabbitMQ messages.
+This will bring up MongoDB, RabbitMQ, Elasticsearch, Kibana, Order and Inventory services.
 
-API Endpoints
+## API Endpoints
 
-ORDER ENDPOINTS
+## ORDER ENDPOINTS
 
-Create Order
-POST /orders/create
+## Create Order
 
-REQUEST:
+_POST /orders/create_
+
+## REQUEST:
 
 json
 
@@ -106,7 +68,7 @@ json
 "quantity": 2
 }
 
-RESPONSE:
+## RESPONSE:
 
 json
 
@@ -115,8 +77,10 @@ json
 "success":true,
 "status": "CREATED"
 }
+
 If Quantity of order exceeds stockQuantity Available
-RESPONSE:
+
+## RESPONSE:
 
 json
 
@@ -126,9 +90,11 @@ json
 "status": "Insufficient stock"
 }
 
-GET orders/getOrders/672e4b235bb72da46dd5496a
+## Get Order
 
-RESPONSE :
+_GET orders/getOrders/672e4b235bb72da46dd5496a_
+
+## RESPONSE :
 
 {
 "\_id": "672e4b235bb72da46dd5496a",
@@ -138,15 +104,15 @@ RESPONSE :
 "\_v": 0
 }
 
-INVENTORY ENDPOINTS
+## INVENTORY ENDPOINTS
 
-Create Inventory Item
+## Create Inventory Item
 
-POST inventory/items
+_POST inventory/items_
 
 This endpoint communicates with the Inventory service via RabbitMQ to check if the requested stock is available.
 
-REQUEST Body:
+## REQUEST Body:
 
 json
 
@@ -156,7 +122,8 @@ json
 "price":100,
 "stockQuantity": 100
 }
-RESPONSE:
+
+## RESPONSE:
 
 json
 
@@ -174,13 +141,13 @@ json
 "success": false,
 }
 
-Create Inventory Item
+## Update Inventory Item Stock
 
-PATCH inventory/items
+_PATCH inventory/items/:id/stock_
 
 This endpoint communicates with the Inventory service to modify the requested item stockQuantity available.
 
-REQUEST Body:
+## REQUEST Body:
 
 json
 
@@ -196,6 +163,19 @@ RESPONSE:
 "\_v": 0
 }
 
+## Get Inventory Item
+
+_GET inventory/items/672de5efa3dccf3d22f21593_
+
+## RESPONSE :
+
+{
+"\_id": "672de5efa3dccf3d22f21593",
+"name": "Spaghetti",
+"description": "Indian made spaghtetti",
+"stockQuantity": 408,
+"\_v": 0
+}
 Logging
 The service uses Winston for logging and stores logs in Elasticsearch for querying and visualization in Kibana.
 
@@ -211,7 +191,7 @@ json
 }
 You can view logs in Kibana at http://localhost:5601.
 
-Testing
+TESTING
 Unit Tests
 Unit tests are written using Jest to test business logic such as stock checking, order creation, etc.
 
@@ -219,20 +199,18 @@ Run unit tests with:
 
 bash
 
-yarn test # or npm test
+in Inventory Service root run `npx run jest`
+
 E2E Tests
 End-to-end tests simulate full workflows, including creating an order and checking stock via RabbitMQ.
 
-Run E2E tests with:
+in Order service run `npx jest /tests/e2eOrder.test.ts`
 
-bash
+## E2E test are set to run with test mongoserver ,
 
-yarn test:e2e # or npm run test:e2e
 Make sure the microservice and required services (MongoDB, RabbitMQ, Elasticsearch) are running before executing the E2E tests.
 
 Troubleshooting
 If MongoDB fails to connect, ensure that the MongoDB container is running and that the correct URI is in your .env file.
 If RabbitMQ is not processing messages, verify that RabbitMQ is running and that the microservice is correctly connected to the queue.
-If you encounter issues with Elasticsearch, ensure that the Elasticsearch container is accessible at the correct URI.
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+If you encounter issues with Elasticsearch, ensure that the Elasticsearch container is accessible at the correct URI and generate token for authentication

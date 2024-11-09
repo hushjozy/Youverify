@@ -1,16 +1,22 @@
 version: "3.8"
 
+networks:
+  you-verify:
+
 services:
   order-service:
     build:
       context: ./order-service
       dockerfile: Dockerfile
+    networks:
+      - you-verify
     ports:
       - "4000:4000"
     environment:
       - MONGO_URI=mongodb://root:passVerify@mongo:27017/youVerify?authSource=admin
-      - RABBITMQ_URI=amqp://myuser:mypassword@rabbitmq:5672
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
       - ELASTICSEARCH_HOST=http://elastic:elasticpassword@elasticsearch:9200
+      - PORT=4000
     depends_on:
       - rabbitmq
 
@@ -18,18 +24,23 @@ services:
     build:
       context: ./inventory-service
       dockerfile: Dockerfile
+    networks:
+      - you-verify
     ports:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://root:passVerify@mongo:27017/youVerify?authSource=admin
-      - RABBITMQ_URI=amqp://myuser:mypassword@rabbitmq:5672
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
       - ELASTICSEARCH_HOST=http://elastic:elasticpassword@elasticsearch:9200
+      - PORT=3000
     depends_on:
       - rabbitmq
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    networks:
+      - you-verify
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -39,9 +50,15 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
     container_name: elasticsearch
+    networks:
+      - you-verify
     environment:
+      - xpack.security.enabled=false
       - discovery.type=single-node
       - ELASTIC_PASSWORD=elasticpassword
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
+      - ELASTICSEARCH_ENROLLMENT_TOKEN=eyJ2ZXIiOiI4LjEwLjAiLCJhZHIiOlsiMTcyLjIwLjAuMzo5MjAwIl0sImZnciI6IjIxMjY5M2QxNzNhMzU3MDg0ZGY2NTEzOTIxODk2MTk5MDExNWZhYmNkNWY1OTk2M2RkMGU4OTE1MDc4ZDIzNTkiLCJrZXkiOiJ2ZUhKRXBNQnR4V0tBVVllVlFoZjpUbXJ4bTVWelFqU1VnRXZjeVRpX0dnIn0=
+
     ports:
       - "9200:9200"
     restart: always
@@ -49,16 +66,20 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.9.0
     container_name: kibana
+    networks:
+      - you-verify
     environment:
-      - ELASTICSEARCH_HOSTS=http://elastic:elasticpassword@elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=elasticpassword
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
+      - ELASTICSEARCH_ENROLLMENT_TOKEN=eyJ2ZXIiOiI4LjEwLjAiLCJhZHIiOlsiMTcyLjIwLjAuMzo5MjAwIl0sImZnciI6IjIxMjY5M2QxNzNhMzU3MDg0ZGY2NTEzOTIxODk2MTk5MDExNWZhYmNkNWY1OTk2M2RkMGU4OTE1MDc4ZDIzNTkiLCJrZXkiOiJ2ZUhKRXBNQnR4V0tBVVllVlFoZjpUbXJ4bTVWelFqU1VnRXZjeVRpX0dnIn0=
     ports:
       - "5601:5601"
     restart: always
   mongo:
     image: mongo:latest
     container_name: mongo
+    networks:
+      - you-verify
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: passVerify
