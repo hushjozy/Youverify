@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "734fa886-089c-444d-87a7-d6f4281152e9",
+		"name": "Inventory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17497557"
+	},
+	"item": [
+		{
+			"name": "Create Inventory Item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Spaghetti\",\r\n    \"description\":\"Indian made spaghtetti\",\r\n    \"stockQuantity\":40\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/inventory/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"inventory",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Inventory Item Stock",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"stockQuantity\":408}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/inventory/items/672e9eaba3bf3c29e60db6df/stock",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"inventory",
+						"items",
+						"672e9eaba3bf3c29e60db6df",
+						"stock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Inventory Item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/inventory/items/672de5efa3dccf3d22f21593",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"inventory",
+						"items",
+						"672de5efa3dccf3d22f21593"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
