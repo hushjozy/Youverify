@@ -10,7 +10,9 @@ export async function connectRabbitMQ() {
     channel = await connection.createChannel();
     console.log("RabbitMQ connection established successfully.");
   } catch (error) {
-    console.error("Failed to connect to RabbitMQ:", error);
+    console.log(process.env.RABBITMQ_URI, error);
+
+    // console.error("Failed to connect to RabbitMQ:", error);
   }
 }
 

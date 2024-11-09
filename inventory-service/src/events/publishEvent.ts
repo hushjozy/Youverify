@@ -11,6 +11,8 @@ export async function connectRabbitMQ() {
     logger.info("RabbitMQ connection established successfully.");
     start().catch(console.error);
   } catch (error) {
+    console.log(process.env.RABBITMQ_URI, error);
+
     logger.error("Failed to connect to RabbitMQ:", error);
   }
 }
